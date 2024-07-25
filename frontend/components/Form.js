@@ -80,28 +80,47 @@ const onSubmit = async evt => {
   evt.preventDefault()
   try {
     await schema.validate(values);
-    const response = await axios.post('http://localhost:9009/api/order', values);
-  // .then(res => {
-    setserverSuccess(response.data.message);
+    const response = await axios.post('http://localhost:9009/api/order', values);  
+    console.log(response.data);  
+    const numberOfToppings = values.toppings.length;
+    const size = values.size;
+    const fullName = values.fullName;  
+    setserverSuccess(`Thank you for your order, ${fullName}! Your ${size} 
+      pizza with ${numberOfToppings} topping${numberOfToppings !== 1 ? 's' : ''} 
+      is on the way.`);
     setserverFailure('');
     setValues(initialValues);
   }
-    catch (err) {
-      if (err.errors && err.errors.length > 0) {
+  catch (err) {
+    console.error(err); // Log the full error object
+    if (err.response) {
+      // If the error is from the response, you can access response data here
+      setserverFailure(err.response.data.message || 'An unexpected error occurred.');
+    } else if (err.errors && err.errors.length > 0) {
       setserverFailure(err.errors[0]);
-      
     } else {
       setserverFailure('An unexpected error occurred.');
     }
     setserverSuccess('');
   }
+  //   catch (err) {
+  //     if (err.errors && err.errors.length > 0) {
+  //     setserverFailure(err.errors[0]);
+      
+  //   } else {
+  //     setserverFailure('An unexpected error occurred.');
+  //   }
+  //   setserverSuccess('');
+  // }
 }
 
 
   return (
+
     <form onSubmit={onSubmit}>
       <h2>Order Your Pizza</h2>
-      {serverSuccess && <div className='success'>Thank you for your order!</div>}
+      
+      {serverSuccess && <div className='success'>{serverSuccess}</div>}
       {serverFailure && <div className='failure'>Something went wrong</div>}
 
       <div className="input-group">
@@ -143,7 +162,7 @@ const onSubmit = async evt => {
         {toppings.map(topping => ( 
         <label key= {topping.topping_id}>
           <input
-           name="toppings"
+           name={topping.topping_id}
            type="checkbox"
           onChange={onChange}
           value={topping.topping_id}
@@ -151,7 +170,8 @@ const onSubmit = async evt => {
           />
           {topping.text}<br />
         </label>
-        ))}
+        ))}       
+
       </div>
       {/* 👇 Make sure the submit stays disabled until the form validates! */}
       <input type="submit" disabled = {formEnabled} />
