@@ -39,7 +39,8 @@ const schema = Yup.object().shape({
   .oneOf(['S', 'M', 'L'], validationErrors.sizeIncorrect)
   .required('Size is a required field'),
   toppings: Yup.array()
-        .of(Yup.string()), 
+        .of(Yup.string())
+        .min(1,'At least one topping must be selected'),
 });  
 
   useEffect(()=> {
@@ -59,8 +60,7 @@ const schema = Yup.object().shape({
       });
   } else {
     setValues({...values, [name]: newValue});
-  }
-  console.log('Current values:', values);
+  }  
     Yup.reach(schema, name)
     .validate(name, {...values, [name]: newValue})
     .then(() => setErrors({...errors, [name]: ''}))

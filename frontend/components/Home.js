@@ -13,7 +13,7 @@ function Home() {
       <img 
   alt="order-pizza" 
   style={{ cursor: 'pointer' }} 
-  src={pizza.jpg} 
+  src={pizza} 
   onClick={() => navigate('/order')} // Correctly placed
 />
     </div>
