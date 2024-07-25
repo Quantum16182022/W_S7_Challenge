@@ -48,16 +48,21 @@ const schema = Yup.object().shape({
 
   const onChange = evt => {
     let {name, type, value, checked} = evt.target
-    console.log(evt.target)
-    console.log(name, value)
     const newValue = type === 'checkbox' ? checked: value;
-    //setValues({...values, [name]: newValue});
-    setValues((prevState) => ({ 
-      ...prevState,
-      [name]: newValue
-    }))
+    if (type === 'checkbox') {
+      // Update toppings based on checkbox selection
+      setValues(prevValues => {
+          const toppings = checked 
+              ? [...prevValues.toppings, name] 
+              : prevValues.toppings.filter(topping => topping !== name);
+          return { ...prevValues, toppings };
+      });
+  } else {
+    setValues({...values, [name]: newValue});
+  }
+  console.log('Current values:', values);
     Yup.reach(schema, name)
-    .validate(newValue)
+    .validate(name, {...values, [name]: newValue})
     .then(() => setErrors({...errors, [name]: ''}))
     .catch((err) => setErrors({...errors, [name]: err.errors[0] }))
   }
@@ -95,20 +100,26 @@ const onSubmit = evt => {
       <div className="input-group">
         <div>
           <label htmlFor="fullName">Full Name</label><br />
-          <input placeholder="Type full name" 
-          value={values.fullName}
+          <input placeholder="Type full name"          
           id="fullName" 
-          type="text"           
+          type="text" 
+          name="fullName"
+          value={values.fullName}
           onChange={onChange}
           />
         </div>
-        {true && <div className='error'>Bad value</div>}
+        {true && <div className='error'></div>}
       </div>
 
       <div className="input-group">
         <div>
           <label htmlFor="size">Size</label><br />
-          <select id="size">
+          <select 
+          id="size"
+          name="size"
+          value={values.size}
+          onChange={onChange}
+          >          
             <option value="">----Choose Size----</option>topping_
             {/* Fill out the missing options */}
             <option value="S">S</option>
@@ -117,7 +128,7 @@ const onSubmit = evt => {
 
           </select>
         </div>
-        {true && <div className='error'>Bad value</div>}
+        {true && <div className='error'></div>}
       </div>
 
       <div className="input-group">
@@ -135,7 +146,7 @@ const onSubmit = evt => {
         ))}
       </div>
       {/* 👇 Make sure the submit stays disabled until the form validates! */}
-      <input type="submit" disabled = {!formEnabled} />
+      <input type="submit" disabled = {formEnabled} />
     </form>
         )
       }
