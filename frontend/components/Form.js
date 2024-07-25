@@ -76,19 +76,26 @@ const toppings = [
 
 ]
 
-const onSubmit = evt => {
+const onSubmit = async evt => {
   evt.preventDefault()
-  axios.post('http://localhost:9009/api/order', values)
-  .then(res => {
-    setserverSuccess(res.data.message)
-    setserverFailure()
-    setValues(initialValues)
-  })
-    .catch( err => {
-      setserverFailure(err.response.data.message) 
-      setserverSuccess()
-    })
- }
+  try {
+    await schema.validate(values);
+    const response = await axios.post('http://localhost:9009/api/order', values);
+  // .then(res => {
+    setserverSuccess(response.data.message);
+    setserverFailure('');
+    setValues(initialValues);
+  }
+    catch (err) {
+      if (err.errors && err.errors.length > 0) {
+      setserverFailure(err.errors[0]);
+      
+    } else {
+      setserverFailure('An unexpected error occurred.');
+    }
+    setserverSuccess('');
+  }
+}
 
 
   return (
@@ -136,9 +143,10 @@ const onSubmit = evt => {
         {toppings.map(topping => ( 
         <label key= {topping.topping_id}>
           <input
-           name={topping.text}
+           name="toppings"
            type="checkbox"
           onChange={onChange}
+          value={topping.topping_id}
 
           />
           {topping.text}<br />
