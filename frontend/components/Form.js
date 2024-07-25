@@ -92,9 +92,9 @@ const onSubmit = async evt => {
     setValues(initialValues);
   }
   catch (err) {
-    console.error(err); // Log the full error object
+    console.error(err);
     if (err.response) {
-      // If the error is from the response, you can access response data here
+      
       setserverFailure(err.response.data.message || 'An unexpected error occurred.');
     } else if (err.errors && err.errors.length > 0) {
       setserverFailure(err.errors[0]);
@@ -103,15 +103,7 @@ const onSubmit = async evt => {
     }
     setserverSuccess('');
   }
-  //   catch (err) {
-  //     if (err.errors && err.errors.length > 0) {
-  //     setserverFailure(err.errors[0]);
-      
-  //   } else {
-  //     setserverFailure('An unexpected error occurred.');
-  //   }
-  //   setserverSuccess('');
-  // }
+  
 }
 
 
