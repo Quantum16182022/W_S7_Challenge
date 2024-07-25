@@ -2,6 +2,25 @@ import React, { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import axios from 'axios'
 
+export default function Form() {
+  const initialValues = {
+    fullName: '',
+    size: '',
+    toppings: [],
+  };
+  const initialErrors = {
+    fullName: '',
+    size: '',
+    toppings: [],  
+  } 
+  
+
+  const [values, setValues] = useState(initialValues);
+  const [errors, setErrors] = useState(initialErrors);
+  const [serverSuccess, setserverSuccess] = useState('');
+  const [serverFailure, setserverFailure] = useState('');
+  const {formEnabled, setFormEnabled} = useState(false);  
+
 
 // 👇 Here are the validation errors you will use with Yup.
 const validationErrors = {
@@ -21,22 +40,7 @@ const schema = Yup.object().shape({
   .required('Size is a required field'),
   toppings: Yup.array()
         .of(Yup.string()), 
-});
-const getInitialValues = () => ({
-  fullName: '',
-  size: '',
-  toppings: [],
-});
-const getInitialErrors = () =>({
-  fullName: '',
-  size: '',
-  toppings: [],  
-});
-  const [values, setValues] = useState(getInitialValues());
-  const [errors, setErrors] = useState(getInitialErrors());
-  const [serverSuccess, setserverSuccess] = useState('');
-  const [serverFailure, setserverFailure] = useState('');
-  const {formEnabled, setFormEnabled} = useState(false);  
+});  
 
   useEffect(()=> {
   schema.isValid(values).then(setFormEnabled) 
@@ -44,11 +48,16 @@ const getInitialErrors = () =>({
 
   const onChange = evt => {
     let {name, type, value, checked} = evt.target
+    console.log(evt.target)
+    console.log(name, value)
     const newValue = type === 'checkbox' ? checked: value;
-    setValues({...values, [name]: newValue});
-
-    schema
-     .validateAt(name, {...values, [name]: newValue})
+    //setValues({...values, [name]: newValue});
+    setValues((prevState) => ({ 
+      ...prevState,
+      [name]: newValue
+    }))
+    Yup.reach(schema, name)
+    .validate(newValue)
     .then(() => setErrors({...errors, [name]: ''}))
     .catch((err) => setErrors({...errors, [name]: err.errors[0] }))
   }
@@ -68,15 +77,15 @@ const onSubmit = evt => {
   .then(res => {
     setserverSuccess(res.data.message)
     setserverFailure()
-    setValues(getInitialValues())
+    setValues(initialValues)
   })
-     .catch( err => {
+    .catch( err => {
       setserverFailure(err.response.data.message) 
       setserverSuccess()
     })
  }
 
-export default function Form() {
+
   return (
     <form onSubmit={onSubmit}>
       <h2>Order Your Pizza</h2>
@@ -86,7 +95,12 @@ export default function Form() {
       <div className="input-group">
         <div>
           <label htmlFor="fullName">Full Name</label><br />
-          <input placeholder="Type full name" id="fullName" type="text" />
+          <input placeholder="Type full name" 
+          value={values.fullName}
+          id="fullName" 
+          type="text"           
+          onChange={onChange}
+          />
         </div>
         {true && <div className='error'>Bad value</div>}
       </div>
