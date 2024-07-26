@@ -10,11 +10,11 @@ function Home() {
         Welcome to Bloom Pizza!
       </h2>
       {/* clicking on the img should navigate to "/order" */}      
-      <img 
+      <img onClick={() => navigate('/order')}
   alt="order-pizza" 
   style={{ cursor: 'pointer' }} 
   src={pizza} 
-  onClick={() => navigate('/order')} // Correctly placed
+  // Correctly placed
 />
     </div>
   )

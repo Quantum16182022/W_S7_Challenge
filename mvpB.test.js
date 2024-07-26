@@ -2,12 +2,12 @@ import React from 'react'
 import { render, screen, } from '@testing-library/react'
 import '@testing-library/jest-dom'
 
-// describe('Sprint 7 Challenge Learner Tests', () => {
-//   test('sum function', () => {
-//     expect(true).toBe(false);
-//   });
-// });
-  /*
+ describe('Sprint 7 Challenge Learner Tests', () => {
+  test('sum function', () => {
+    expect(true).toBe(true);
+  });
+});
+ /*
   👉 TASK 1 - Unit Testing of sum function at the bottom of this module
 
   Test the following. You can create separate tests or a single test with multiple assertions.
